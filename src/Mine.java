@@ -7,34 +7,46 @@ import java.util.*;
 import javax.swing.*;
 public class Mine extends JFrame implements ActionListener{
 	JFrame f;
-	JButton[] bomb_arr = new JButton[49];
-	Bomb[] bomb_map = new Bomb[49]; 
+	JButton[] bomb_arr = new JButton[144];
+	Bomb[] bomb_map = new Bomb[144];
+	int[] stack = new int[200];
+	static int stack_index = 0;
 	public Mine(){
 		
 		f = new JFrame();
-		for(int i=0;i<7;i++){
-			for(int j=0;j<7;j++){
-				bomb_arr[i*7+j] = new JButton();
-				bomb_arr[i*7+j].setIcon(new ImageIcon("btnNor.bmp"));
-				bomb_map[i*7+j] = new Bomb(i,j);
-				bomb_map[i*7+j].flag = 0;
-				if(i==0)
-					bomb_map[i*7+j].flag = -1;
-				if(j==0)
-					bomb_map[i*7+j].flag = -1;
-				if(i==6)
-					bomb_map[i*7+j].flag = -1;
-				if(j==6)
-					bomb_map[i*7+j].flag = -1;
+		for(int i=0;i<12;i++){
+			for(int j=0;j<12;j++){
+				bomb_arr[i*12+j] = new JButton();
+				bomb_arr[i*12+j].setIcon(new ImageIcon("btnNor.bmp"));
+				bomb_map[i*12+j] = new Bomb(i,j);
+				bomb_map[i*12+j].flag = 0;
+				if(bomb_map[i*12+j].bomb == true)
+					bomb_map[i*12+j].count = -2;
+				if(i==0){
+					bomb_map[i*12+j].flag = -1;
+					bomb_map[i*12+j].count = -1;
+				}
+				if(j==0){
+					bomb_map[i*12+j].flag = -1;
+					bomb_map[i*12+j].count = -1;
+				}
+				if(i==11){
+					bomb_map[i*12+j].flag = -1;
+					bomb_map[i*12+j].count = -1;
+				}
+				if(j==11){
+					bomb_map[i*12+j].flag = -1;
+					bomb_map[i*12+j].count = -1;
+				}
 			}
 		}
 	
 		
 		//display();
-		Statics();
+		Statistics();
 		display();
-		
-		
+		Search(8,9);
+	
 		
 		
 		f.addWindowListener(new WindowAdapter(){
@@ -44,32 +56,32 @@ public class Mine extends JFrame implements ActionListener{
 		});
 		
 	}
-	private void Statics(){
+	private void Statistics(){
 		int count=0;
-		for(int i=1;i<6;i++){
-			for(int j=1;j<6;j++){
+		for(int i=1;i<11;i++){
+			for(int j=1;j<11;j++){
 				int ii = i-1;
 				int jj = j-1;
-				if(bomb_map[ii*7+jj].bomb == true)
+				if(bomb_map[ii*12+jj].bomb == true)
 					count++;
-				if(bomb_map[(ii+1)*7+jj].bomb == true)
+				if(bomb_map[(ii+1)*12+jj].bomb == true)
 					count++;
-				if(bomb_map[(ii+2)*7+jj].bomb == true)
-					count++;
-
-				if(bomb_map[(ii+2)*7+jj+1].bomb == true)
+				if(bomb_map[(ii+2)*12+jj].bomb == true)
 					count++;
 
-				if(bomb_map[(ii+2)*7+jj+2].bomb == true)
+				if(bomb_map[(ii+2)*12+jj+1].bomb == true)
 					count++;
-				if(bomb_map[(ii+1)*7+jj+2].bomb == true)
+
+				if(bomb_map[(ii+2)*12+jj+2].bomb == true)
 					count++;
-				if(bomb_map[ii*7+jj+2].bomb == true)
+				if(bomb_map[(ii+1)*12+jj+2].bomb == true)
 					count++;
-				if(bomb_map[ii*7+jj+1].bomb == true)
+				if(bomb_map[ii*12+jj+2].bomb == true)
+					count++;
+				if(bomb_map[ii*12+jj+1].bomb == true)
 					count++;			
 				System.out.printf("%d ",count);
-				bomb_map[i*7+j].count = count;
+				bomb_map[i*12+j].count = count;
 				count = 0;
 			}
 			count = 0;
@@ -77,28 +89,54 @@ public class Mine extends JFrame implements ActionListener{
 		}
 	}
 	private void Search(int i,int j){
+		int index;
+		int x,y;
+		for(int ii=-1;ii<=1;ii++)
+			for(int jj = -1;jj<=1;jj++){
+				x = i +ii;
+				y = j + jj;
+				index = x + y*12;
+				if(index>=1){
+						if(!bomb_map[index].onClick){
+							if(bomb_map[index].count == 0 && bomb_map[index].inStack != true 
+									&& bomb_map[index].bomb != true){
+								System.out.println(index);
+								stack[++stack_index] = index;
+								bomb_map[index].inStack = true;
+								System.out.println("stack_index  "+stack_index);
+								System.out.printf("%d %d\n",i,j);
+								Search(x,y);
+							}
+				
+						}
+						else if(bomb_map[index].onClick){
+							return;
+						}
+				}
+		}
 		
 	}
+	
 	private void display(){
 		
-		for(int i=0;i<49;i++){
+		for(int i=0;i<144;i++){
 			if(bomb_map[i].bomb == true)
 				System.out.printf("* ");
 			else if(bomb_map[i].flag != -1)
 				System.out.printf("0 ");
 			else
 				System.out.printf("- ");
-			if(i%7 == 6 && i != 0)
+			if(i%12 == 11 && i != 0)
 				System.out.println("");
 		}
-		for(int i=0;i<49;i++){
+		for(int i=0;i<144;i++){
 			if(bomb_map[i].bomb == true)
 				System.out.printf("* ");
 			else if(bomb_map[i].flag != -1)
 				System.out.printf("%d ",bomb_map[i].count);
 			else
 				System.out.printf("- ");
-			if(i%7 == 6 && i != 0)
+			if(i%12 == 11 && i != 0)
 				System.out.println("");
 		}
 					

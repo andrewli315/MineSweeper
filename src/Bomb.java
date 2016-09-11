@@ -6,12 +6,13 @@ public class Bomb{
 	public int j;
 	public int flag;
 	public int count;
+	public boolean inStack = false;
 	public boolean onClick = false;
 	public boolean bomb;
 	public Bomb(int i,int j){
 		this.i = i;
 		this.j = j;
-		if(Math.random()>0.8 && i != 0 && j != 0 && i != 6 && j != 6)
+		if(Math.random()>0.9 && i != 0 && j != 0 && i != 11 && j != 11)
 			this.bomb = true;
 		else
 			this.bomb = false;
