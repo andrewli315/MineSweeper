@@ -46,6 +46,7 @@ public class Mine extends JFrame implements ActionListener{
 		Statistics();
 		display();
 		Search(8,9);
+		display();
 	
 		
 		
@@ -91,12 +92,35 @@ public class Mine extends JFrame implements ActionListener{
 	private void Search(int i,int j){
 		int index;
 		int x,y;
-		for(int ii=-1;ii<=1;ii++)
+		for(int ii=-1;ii<=1;ii++){
 			for(int jj = -1;jj<=1;jj++){
 				x = i +ii;
 				y = j + jj;
 				index = x + y*12;
-				if(index>=1){
+				if(ii == -1 || ii == 1 )
+					if(jj == 0){
+						if(index>=1){
+							if(!bomb_map[index].onClick){
+								if(bomb_map[index].count == 0 && bomb_map[index].inStack != true 
+										&& bomb_map[index].bomb != true){
+									System.out.println(index);
+									stack[++stack_index] = index;
+									bomb_map[index].inStack = true;
+									System.out.println("stack_index  "+stack_index);
+									System.out.printf("%d %d\n",i,j);
+									Search(x,y);
+								}
+					
+							}
+							else if(bomb_map[index].onClick){
+								return;
+							}
+						}
+					}
+					else 
+						continue;
+				if(ii == 0){
+					if(index>=1){
 						if(!bomb_map[index].onClick){
 							if(bomb_map[index].count == 0 && bomb_map[index].inStack != true 
 									&& bomb_map[index].bomb != true){
@@ -112,9 +136,10 @@ public class Mine extends JFrame implements ActionListener{
 						else if(bomb_map[index].onClick){
 							return;
 						}
+					}
 				}
+			}
 		}
-		
 	}
 	
 	private void display(){
@@ -132,8 +157,10 @@ public class Mine extends JFrame implements ActionListener{
 		for(int i=0;i<144;i++){
 			if(bomb_map[i].bomb == true)
 				System.out.printf("* ");
-			else if(bomb_map[i].flag != -1)
+			else if(bomb_map[i].flag != -1 && bomb_map[i].inStack != true)
 				System.out.printf("%d ",bomb_map[i].count);
+			else if(bomb_map[i].inStack == true)
+				System.out.printf("x ");
 			else
 				System.out.printf("- ");
 			if(i%12 == 11 && i != 0)
