@@ -12,10 +12,8 @@ public class Bomb{
 	public Bomb(int i,int j){
 		this.i = i;
 		this.j = j;
-		if(Math.random()>0.9 && i != 0 && j != 0 && i != 11 && j != 11)
-			this.bomb = true;
-		else
-			this.bomb = false;
+		//if(Math.random()>0.9 && i != 0 && j != 0 && i != 11 && j != 11)
+		this.bomb = false;
 	}
 	
 	public void Onclick_event(){
